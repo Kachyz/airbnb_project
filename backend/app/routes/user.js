@@ -3,7 +3,7 @@ const router = express.Router() //Solo trabajaremos con las rutas, no necesitamo
 const params = require('strong-params')
 var bcrypt = require('bcrypt');
 
-const saltRounds = 10;
+const saltRounds = process.env.SALT;
 
 router.use(params.expressMiddleware())
 

@@ -1,0 +1,14 @@
+version: '3'
+services:
+  db:
+    image: "mongo"
+  backend:
+    image: "backendairbnb"
+    depends_on:
+      - db
+    ports:
+      - 3000:3000
+    environment:
+      - PORT=3000
+      - SALT=10
+    command: npm start
