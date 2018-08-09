@@ -23,13 +23,23 @@ router.post('/signup', (req, res) => {
     return
   }
 
-  bcrypt.hash(userParams.password, saltRounds, (err, hash) => {
-    userParams.password = hash
-    const user = new Users(userParams) // Guardar en la base de datos
-    user.save().then( createdUser => {
-      const token = jwt.sign(createdUser.toJSON(), 'devefe')
-      res.send({token}) //{token} es lo mismo que {token: token}
-    })
+  Users.find({ email: userParams.email }, (err, docs) => {
+    if(docs.length > 0)
+      res.send('Mail already in use')
+    else {  
+      bcrypt.hash(userParams.password, saltRounds, (err, hash) => {
+        userParams.password = hash
+        const user = new Users(userParams) // Guardar en la base de datos
+        user.save()
+        .then( createdUser => {
+          const token = jwt.sign(createdUser.toJSON(), 'devefe')
+          res.send({token}) //{token} es lo mismo que {token: token}
+        })
+        .catch( err => {
+          console.log('Error recibido al tratar de guardar usuario -', err);
+        })
+      });
+    }
   });
 })
 
