@@ -1,9 +1,11 @@
 const express = require('express')
 const router = express.Router() //Solo trabajaremos con las rutas, no necesitamos todas las funcionalidades de EXPRESS
 const params = require('strong-params')
+const jwt = require('jsonwebtoken')
+const Users = require('../db/models/users')
 var bcrypt = require('bcrypt');
 
-const saltRounds = process.env.SALT;
+const saltRounds = parseInt(process.env.SALT);
 
 router.use(params.expressMiddleware())
 
@@ -23,7 +25,11 @@ router.post('/signup', (req, res) => {
 
   bcrypt.hash(userParams.password, saltRounds, (err, hash) => {
     userParams.password = hash
-    res.send(userParams)
+    const user = new Users(userParams) // Guardar en la base de datos
+    user.save().then( createdUser => {
+      const token = jwt.sign(createdUser.toJSON(), 'devefe')
+      res.send({token}) //{token} es lo mismo que {token: token}
+    })
   });
 })
 
