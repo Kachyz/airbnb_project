@@ -3,11 +3,12 @@ const app = express()
 const users = require('./routes/user')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
+const cors = require('cors')
 
 const PORT = process.env.PORT
 
+app.use(cors())
 app.use(morgan('combined'))
-
 app.use(bodyParser.json())
 
 app.use('/users', users)
