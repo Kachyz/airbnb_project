@@ -31,16 +31,32 @@ router.post('/signup', (req, res) => {
         userParams.password = hash
         const user = new Users(userParams) // Guardar en la base de datos
         user.save()
-        .then( createdUser => {
-          const token = jwt.sign(createdUser.toJSON(), 'devefe')
-          res.send({token}) //{token} es lo mismo que {token: token}
-        })
-        .catch( err => {
-          console.log('Error recibido al tratar de guardar usuario -', err);
-        })
+          .then( createdUser => {
+            const token = jwt.sign(createdUser.toJSON(), 'devefe')
+            res.send({token}) //{token} es lo mismo que {token: token}
+          })
+          .catch( err => {
+            console.log('Error recibido al tratar de guardar usuario -', err);
+          })
       });
     }
   });
+})
+
+router.post('/login', (req, res) => {
+  const params = req.parameters
+  let userParams = params.require('user').permit('email', 'password').value()
+  Users.findOne({ 
+    email: userParams.email 
+  }, (err, user) => {
+    if (err) return res.send(error);
+
+    bcrypt.compare(userParams.password, user.password, (err, response) => {
+      if(response)
+        return res.send("si son iguales")
+      res.send("Las contrasenas no hacen match")
+    })
+  })
 })
 
 const strongPwd = password => {
