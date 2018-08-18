@@ -52,8 +52,10 @@ router.post('/login', (req, res) => {
     if (err) return res.send(error);
 
     bcrypt.compare(userParams.password, user.password, (err, response) => {
-      if(response)
-        return res.send("si son iguales")
+      if(response){
+        const token = jwt.sign(user.toJSON(), 'devefe')
+        return res.send({token:token})
+      }
       res.send("Las contrasenas no hacen match")
     })
   })
