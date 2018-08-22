@@ -14,12 +14,12 @@ router.post('/signup', (req, res) => {
   let userParams = params.require('user').permit('email', 'password').value()
 
   if(!validMail(userParams.email)) {
-    res.send("Wrong email format")
+    res.status(406).send("Wrong email format")
     return
   }
   
   if(!strongPwd(userParams.password)){
-    res.send("Password is not strong enough")
+    res.status(406).send("Password is not strong enough")
     return
   }
 
@@ -50,7 +50,7 @@ router.post('/login', (req, res) => {
     email: userParams.email 
   }, (err, user) => {
     if (err) return res.send(error);
-
+    if (user === null) return res.status(401).send('Usuario / contrasena no valido')
     bcrypt.compare(userParams.password, user.password, (err, response) => {
       if(response){
         const token = jwt.sign(user.toJSON(), 'devefe')

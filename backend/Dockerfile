@@ -8,4 +8,4 @@ RUN npm install
 
 COPY app /app
 
-CMD npm test
+CMD npm start
